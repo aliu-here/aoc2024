@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <set>
 
 #include <thread> //cant be bothered to figure out a faster solution
 #include <atomic>
@@ -20,7 +21,6 @@ bool check_if_loop(std::vector<std::string> &grid, int x, int y, int dir)
         std::vector<int> temp(grid[0].size());
         visited_count.push_back(temp);
     }
-    int steps_taken = 0, xcopy=x, ycopy = y;
     while (visited_count[x][y] < 5){ // you can only visit each square twice
         if (dir == UP)
             (x)--;
@@ -50,11 +50,11 @@ bool check_if_loop(std::vector<std::string> &grid, int x, int y, int dir)
     return 1;
 }
 
-void check_posns(std::vector<std::string> grid, int x, int y, int row, int dir, std::atomic_int &out, std::atomic_int &counter) {
+void check_posns(std::vector<std::string> grid, int x, int y, std::vector<std::vector<int>> &posns, int dir, std::atomic_int &out, std::atomic_int &counter) {
     int calc_val = 0;
-    for (int i=0; i<grid[row].size(); i++) {
+    for (std::vector<int> pos : posns) {
         std::vector<std::string> copy = grid;
-        copy[row][i] = '#';
+        copy[pos[0]][pos[1]] = '#';
         calc_val += check_if_loop(copy, x, y, dir);
     }
 
@@ -98,12 +98,52 @@ int main()
             break;
     }
 
-    for (int i=0; i<grid.size(); i++) {
-        std::thread temp(check_posns, grid, x, y, i, dir, std::ref(p2), std::ref(counter));
+    int xcopy = x, ycopy = y, origdir = dir;
+    
+    std::set<std::vector<int>> posns;
+    while (true){ // you can only visit each square twice
+        if (dir == UP)
+            (x)--;
+        if (dir == DOWN)
+            (x)++;
+        if (dir == LEFT)
+            (y)--;
+        if (dir == RIGHT)
+            (y)++;
+        if ((x < 0 || x >= grid.size()) || (y < 0 || y >= grid[x].size())) {
+            break;
+        }
+        if (grid[x][y] == '#') {
+            if (dir == UP) //backtrack
+                (x)++;
+            if (dir == DOWN)
+                (x)--;
+            if (dir == LEFT)
+                (y)++;
+            if (dir == RIGHT)
+                (y)--;
+            dir = (dir + 1) % 4; //stupidish way to do 90 deg rotation
+            continue;
+        }
+        posns.insert({x, y});
+    }
+
+    const int thread_count = 64;
+    std::vector<std::vector<std::vector<int>>> dist_work(thread_count);
+
+    int i=0;
+    for (std::vector<int> pos : posns) {
+        dist_work[i%64].push_back(pos);
+        i++;
+    }
+    
+
+    for (int i=0; i<thread_count; i++) {
+        std::thread temp(check_posns, grid, xcopy, ycopy, std::ref(dist_work[i]), origdir, std::ref(p2), std::ref(counter));
         temp.detach();
     }
 
-    while (counter < grid.size()) {
+    while (counter < thread_count) {
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         std::cout << counter << '\n';
     }
