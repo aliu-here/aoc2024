@@ -135,4 +135,3 @@ int main()
 
     std::cout << "p1: " << p2 << '\n';
 }
-
