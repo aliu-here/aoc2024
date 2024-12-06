@@ -21,7 +21,7 @@ bool check_if_loop(std::vector<std::string> &grid, int x, int y, int dir)
         std::vector<int> temp(grid[0].size());
         visited_count.push_back(temp);
     }
-    while (visited_count[x][y] < 5){ // you can only visit each square twice
+    while (visited_count[x][y] < 5){ // you can visit each square 4x
         if (dir == UP)
             (x)--;
         if (dir == DOWN)
@@ -128,12 +128,12 @@ int main()
         posns.insert({x, y});
     }
 
-    const int thread_count = 64;
+    const int thread_count = 16;
     std::vector<std::vector<std::vector<int>>> dist_work(thread_count);
 
     int i=0;
     for (std::vector<int> pos : posns) {
-        dist_work[i%64].push_back(pos);
+        dist_work[i%thread_count].push_back(pos);
         i++;
     }
     
@@ -144,8 +144,7 @@ int main()
     }
 
     while (counter < thread_count) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        std::cout << counter << '\n';
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 
     std::cout << "p2: " << p2 << '\n';
