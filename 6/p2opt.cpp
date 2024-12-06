@@ -2,7 +2,6 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <set>
 
 #include <thread> //cant be bothered to figure out a faster solution
 #include <atomic>
@@ -16,9 +15,13 @@ enum directions {
 
 bool check_if_loop(std::vector<std::string> &grid, int x, int y, int dir)
 {
-    std::set<std::vector<int>> visited = {{x, y}};
+    std::vector<std::vector<int>> visited_count;
+    for (int i=0; i<grid.size(); i++) {
+        std::vector<int> temp(grid[0].size());
+        visited_count.push_back(temp);
+    }
     int steps_taken = 0, xcopy=x, ycopy = y;
-    while (2 * visited.size() >= steps_taken){
+    while (visited_count[x][y] < 5){ // you can only visit each square twice
         if (dir == UP)
             (x)--;
         if (dir == DOWN)
@@ -42,8 +45,7 @@ bool check_if_loop(std::vector<std::string> &grid, int x, int y, int dir)
             dir = (dir + 1) % 4; //stupidish way to do 90 deg rotation
             continue;
         }
-        visited.insert({x, y});
-        steps_taken++;
+        visited_count[x][y]++;
     }
     return 1;
 }
@@ -69,9 +71,9 @@ int main()
         grid.push_back(line);
     }
 
-    for (std::string row : grid) {
+/*    for (std::string row : grid) {
         std::cout << row.size() << '\n';
-    }
+    }*/
 
     int dir = -1, x, y;
     std::atomic_int p2=0, counter=0;
