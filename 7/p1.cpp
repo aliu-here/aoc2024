@@ -4,23 +4,19 @@
 #include <string>
 #include <sstream>
 
-//dfs it out
 bool num_works(long long calibration_val, std::vector<long long> vals)
 {
-    if (vals[0] > calibration_val)
-        return 0;
     if (vals.size() == 1)
         return calibration_val == vals[0];
-    std::vector<long long> newvec(vals.begin()+1, vals.end());
-
-    newvec[0] = vals[0]+vals[1];
-    if (num_works(calibration_val, newvec))
-        return true;
-
-    newvec[0] = vals[0]*vals[1];
-    if (num_works(calibration_val, newvec))
-        return true;
-    return false;;
+    long long last_ele = vals[vals.size() - 1];
+    bool out = false;
+    vals.pop_back();
+//    std::cout << "calibration_val: " << calibration_val << " last_ele: " << last_ele << '\n';
+    if (calibration_val/last_ele * last_ele == calibration_val)
+        out |= num_works(calibration_val / last_ele, vals);
+    if (calibration_val >= last_ele)
+        out |= num_works(calibration_val - last_ele, vals);
+    return out;
 }
 
 int main()
