@@ -4,69 +4,43 @@
 #include <string>
 #include <sstream>
 
-#define ull unsigned long long
-
-ull fastlogexp(ull num)
-{
-    ull val = 10;
-    while (num >= val) {
-        val *= 10;
-    }
-    return val;
-}
-
-ull deconcat(ull a, ull b)
-{
-    return (a - b) / fastlogexp(b);
-}
-
-bool can_concat(ull a, ull b)
-{
-    ull temp = a - b;
-    ull temp_pow = fastlogexp(b);
-    if (temp / temp_pow * temp_pow == temp)
-        return true;
-    return false;
-}
-
 //dfs it out
-bool num_works(ull calibration_val, std::vector<ull> vals)
+bool num_works(long long calibration_val, std::vector<long long> vals)
 {
+    if (vals[0] > calibration_val)
+        return 0;
     if (vals.size() == 1)
         return calibration_val == vals[0];
-    ull last_ele = vals[vals.size() - 1];
-    bool out = false;
-    vals.pop_back();
-    if (can_concat(calibration_val, last_ele))
-        out |= num_works(deconcat(calibration_val, last_ele), vals);
-    if (calibration_val/last_ele * last_ele == calibration_val)
-        out |= num_works(calibration_val / last_ele, vals);
-    if (calibration_val >= last_ele)
-        out |= num_works(calibration_val - last_ele, vals);
-    return out;
+    bool mul, add, concat;
+    std::vector<long long> newvec(vals.begin()+1, vals.end());
+    newvec[0] = vals[0]*vals[1];
+    mul = num_works(calibration_val, newvec);
+    newvec[0] = vals[0]+vals[1];
+    add = num_works(calibration_val, newvec);
+    newvec[0] = std::stol(std::to_string(vals[0]) + std::to_string(vals[1]));
+    concat = num_works(calibration_val, newvec);
+    return mul || add || concat;
 }
-
 
 int main()
 {
     std::ifstream in("input.txt");
     std::string line;
 
-    ull p2 = 0;
+    long long p2 = 0;
     while (getline(in, line)) {
         std::stringstream linestream(line);
         std::string calibration_val_str;
         linestream >> calibration_val_str;
         calibration_val_str = calibration_val_str.substr(0, calibration_val_str.size()-1);
-        ull calibration_val = std::stol(calibration_val_str);
+        long long calibration_val = std::stol(calibration_val_str);
 
-        ull temp;
-        std::vector<ull> vals;
+        long long temp;
+        std::vector<long long> vals;
         while (linestream >> temp) {
             vals.push_back(temp);
         }
-        p2 += num_works(calibration_val, vals) * calibration_val;
+        p2 += calibration_val * num_works(calibration_val, vals);
     }
-
     std::cout << "p2: " << p2 << '\n';
 }

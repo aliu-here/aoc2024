@@ -4,20 +4,21 @@
 #include <string>
 #include <sstream>
 
-//dfs it out
-bool num_works(long long calibration_val, std::vector<long long> vals)
+#define ull long long
+
+bool num_works(ull calibration_val, std::vector<ull> vals)
 {
-    if (vals[0] > calibration_val)
-        return 0;
     if (vals.size() == 1)
         return calibration_val == vals[0];
-    bool mul, add;
-    std::vector<long long> newvec(vals.begin()+1, vals.end());
-    newvec[0] = vals[0]*vals[1];
-    mul = num_works(calibration_val, newvec);
-    newvec[0] = vals[0]+vals[1];
-    add = num_works(calibration_val, newvec);
-    return mul | add;
+    ull last_ele = vals[vals.size() - 1];
+    bool out = false;
+    vals.pop_back();
+//    std::cout << "calibration_val: " << calibration_val << " last_ele: " << last_ele << '\n';
+    if (calibration_val/last_ele * last_ele == calibration_val)
+        out |= num_works(calibration_val / last_ele, vals);
+    if (calibration_val >= last_ele)
+        out |= num_works(calibration_val - last_ele, vals);
+    return out;
 }
 
 int main()
@@ -25,16 +26,16 @@ int main()
     std::ifstream in("input.txt");
     std::string line;
 
-    long long p1 = 0;
+    ull p1 = 0;
     while (getline(in, line)) {
         std::stringstream linestream(line);
         std::string calibration_val_str;
         linestream >> calibration_val_str;
         calibration_val_str = calibration_val_str.substr(0, calibration_val_str.size()-1);
-        long long calibration_val = std::stol(calibration_val_str);
+        ull calibration_val = std::stol(calibration_val_str);
 
-        long long temp;
-        std::vector<long long> vals;
+        ull temp;
+        std::vector<ull> vals;
         while (linestream >> temp) {
             vals.push_back(temp);
         }
