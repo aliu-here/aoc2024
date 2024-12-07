@@ -52,10 +52,11 @@ bool check_if_loop(std::vector<std::string> &grid, int x, int y, int dir)
 
 void check_posns(std::vector<std::string> grid, int x, int y, std::vector<std::vector<int>> &posns, int dir, std::atomic_int &out, std::atomic_int &counter) {
     int calc_val = 0;
+
     for (std::vector<int> pos : posns) {
-        std::vector<std::string> copy = grid;
-        copy[pos[0]][pos[1]] = '#';
-        calc_val += check_if_loop(copy, x, y, dir);
+        grid[pos[0]][pos[1]] = '#'; // this is fine bc it's a copy fed into the function
+        calc_val += check_if_loop(grid, x, y, dir);
+        grid[pos[0]][pos[1]] = '.';
     }
 
     out.fetch_add(calc_val);
