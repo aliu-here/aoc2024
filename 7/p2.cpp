@@ -5,18 +5,24 @@
 #include <sstream>
 #include <cmath>
 
+long long fastlogexp(long long num)
+{
+    long long val = 10;
+    while (num >= val) {
+        val *= 10;
+    }
+    return val;
+}
 
 long long deconcat(long long a, long long b)
 {
-    int temp_exp = std::log10(b) + 1;
-    return (a - b) / std::pow(10, temp_exp);
+    return (a - b) / fastlogexp(b);
 }
 
 bool can_concat(long long a, long long b)
 {
     long long temp = a - b;
-    int temp_exp = std::log10(b) + 1;
-    long long temp_pow = std::pow(10, temp_exp);
+    long long temp_pow = fastlogexp(b);
     if (temp / temp_pow * temp_pow == temp)
         return true;
     return false;
@@ -30,7 +36,6 @@ bool num_works(long long calibration_val, std::vector<long long> vals)
     long long last_ele = vals[vals.size() - 1];
     bool out = false;
     vals.pop_back();
-//    std::cout << "calibration_val: " << calibration_val << " last_ele: " << last_ele << '\n';
     if (can_concat(calibration_val, last_ele))
         out |= num_works(deconcat(calibration_val, last_ele), vals);
     if (calibration_val/last_ele * last_ele == calibration_val)
