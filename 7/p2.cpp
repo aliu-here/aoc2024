@@ -3,10 +3,18 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <cmath>
 
 #include <thread>
 #include <atomic>
 #include <chrono>
+
+
+long long concat(long long a, long long b)
+{
+    int temp_exp = std::log10(b) + 1;
+    return a * std::pow(10, temp_exp) + b;
+}
 
 //dfs it out
 bool num_works(long long calibration_val, std::vector<long long> vals)
@@ -15,7 +23,6 @@ bool num_works(long long calibration_val, std::vector<long long> vals)
         return 0;
     if (vals.size() == 1)
         return calibration_val == vals[0];
-    bool mul, add, concat;
     std::vector<long long> newvec(vals.begin()+1, vals.end());
 
     newvec[0] = vals[0]+vals[1];
@@ -26,7 +33,7 @@ bool num_works(long long calibration_val, std::vector<long long> vals)
     if (num_works(calibration_val, newvec))
         return true;
 
-    newvec[0] = std::stol(std::to_string(vals[0]) + std::to_string(vals[1]));
+    newvec[0] = concat(vals[0], vals[1]);
     if (num_works(calibration_val, newvec))
         return true;
     return false;
