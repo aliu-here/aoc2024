@@ -3,37 +3,38 @@
 #include <vector>
 #include <string>
 #include <sstream>
-#include <cmath>
 
-long long fastlogexp(long long num)
+#define ull unsigned long long
+
+ull fastlogexp(ull num)
 {
-    long long val = 10;
+    ull val = 10;
     while (num >= val) {
         val *= 10;
     }
     return val;
 }
 
-long long deconcat(long long a, long long b)
+ull deconcat(ull a, ull b)
 {
     return (a - b) / fastlogexp(b);
 }
 
-bool can_concat(long long a, long long b)
+bool can_concat(ull a, ull b)
 {
-    long long temp = a - b;
-    long long temp_pow = fastlogexp(b);
+    ull temp = a - b;
+    ull temp_pow = fastlogexp(b);
     if (temp / temp_pow * temp_pow == temp)
         return true;
     return false;
 }
 
 //dfs it out
-bool num_works(long long calibration_val, std::vector<long long> vals)
+bool num_works(ull calibration_val, std::vector<ull> vals)
 {
     if (vals.size() == 1)
         return calibration_val == vals[0];
-    long long last_ele = vals[vals.size() - 1];
+    ull last_ele = vals[vals.size() - 1];
     bool out = false;
     vals.pop_back();
     if (can_concat(calibration_val, last_ele))
@@ -51,16 +52,16 @@ int main()
     std::ifstream in("input.txt");
     std::string line;
 
-    long long p2 = 0;
+    ull p2 = 0;
     while (getline(in, line)) {
         std::stringstream linestream(line);
         std::string calibration_val_str;
         linestream >> calibration_val_str;
         calibration_val_str = calibration_val_str.substr(0, calibration_val_str.size()-1);
-        long long calibration_val = std::stol(calibration_val_str);
+        ull calibration_val = std::stol(calibration_val_str);
 
-        long long temp;
-        std::vector<long long> vals;
+        ull temp;
+        std::vector<ull> vals;
         while (linestream >> temp) {
             vals.push_back(temp);
         }
