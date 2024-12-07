@@ -133,5 +133,5 @@ int main()
         std::cout << counter << '\n';
     }
 
-    std::cout << "p1: " << p2 << '\n';
+    std::cout << "p2: " << p2 << '\n';
 }
