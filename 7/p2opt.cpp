@@ -24,9 +24,7 @@ bool can_concat(ull a, ull b)
 {
     ull temp = a - b;
     ull temp_pow = fastlogexp(b);
-    if (temp / temp_pow * temp_pow == temp)
-        return true;
-    return false;
+    return temp % temp_pow == 0;
 }
 
 //dfs it out
@@ -39,7 +37,7 @@ bool num_works(ull calibration_val, std::vector<ull> vals)
     vals.pop_back();
     if (can_concat(calibration_val, last_ele))
         out |= num_works(deconcat(calibration_val, last_ele), vals);
-    if (calibration_val/last_ele * last_ele == calibration_val)
+    if (calibration_val % last_ele == 0)
         out |= num_works(calibration_val / last_ele, vals);
     if (calibration_val >= last_ele)
         out |= num_works(calibration_val - last_ele, vals);
