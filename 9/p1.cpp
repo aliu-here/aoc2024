@@ -6,7 +6,7 @@
 
 int main()
 {
-    std::ifstream in("input.txt");
+    std::ifstream in("input4.txt");
     std::string line;
     getline(in, line); //only one line
     std::vector<int> expanded_fs;

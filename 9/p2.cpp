@@ -39,32 +39,28 @@ int main()
 
     bool any_works;
     std::set<int> locs_to_skip;
-    do {
-        any_works = false;
-        for (int i=filestarts.size() - 1; i >= 0; i--) {
-            if (locs_to_skip.find(i) != locs_to_skip.end())
-                continue;
-            bool this_works = false;
-            for (int j=0; j<freespace.size(); j++) {
-                if (freespace[j][0] > filestarts[i])
-                    break;
-                if (freespace[j][1] >= sizes[i]) {
-                    this_works = true;
-                    for (int copy_idx = 0; copy_idx < sizes[i]; copy_idx++) {
-                        expanded_fs[freespace[j][0] + copy_idx] = expanded_fs[filestarts[i] + copy_idx];
-                        expanded_fs[filestarts[i] + copy_idx] = -1;
-                    }
-                    freespace[j][0] += sizes[i];
-                    freespace[j][1] -= sizes[i];
+    for (int i=filestarts.size() - 1; i >= 0; i--) {
+        if (locs_to_skip.find(i) != locs_to_skip.end())
+            continue;
+        bool this_works = false;
+        for (int j=0; j<freespace.size(); j++) {
+            if (freespace[j][0] > filestarts[i])
+                break;
+            if (freespace[j][1] >= sizes[i]) {
+                this_works = true;
+                for (int copy_idx = 0; copy_idx < sizes[i]; copy_idx++) {
+                    expanded_fs[freespace[j][0] + copy_idx] = expanded_fs[filestarts[i] + copy_idx];
+                    expanded_fs[filestarts[i] + copy_idx] = -1;
                 }
-                if (this_works) {
-                    locs_to_skip.insert(i);
-                    break;
-                }
-                any_works |= this_works;
+                freespace[j][0] += sizes[i];
+                freespace[j][1] -= sizes[i];
+            }
+            if (this_works) {
+                locs_to_skip.insert(i);
+                break;
             }
         }
-    } while(any_works);
+    }
 
 
     long long p2 = 0;
