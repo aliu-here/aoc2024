@@ -1,7 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
-#include <string>
 #include <unordered_map>
 
 int main()
@@ -16,11 +15,9 @@ int main()
         for (auto &[num, temp] : vals) {
             if (num == 0) {
                 newvals[1] += vals[num];
-            } else if (std::to_string(num).size() % 2 == 0) {
-                std::string numstring = std::to_string(num);
-                int numstring_len = numstring.size();
-                long long firsthalf = std::stol(numstring.substr(0, numstring_len / 2)),\
-                     sechalf = std::stol(numstring.substr(numstring_len / 2, numstring_len / 2));
+            } else if ((int)std::log10(num) % 2 == 1) { //even digits means odd exp
+                int exp = std::ceil(std::log10(num) / 2);
+                long long firsthalf = num / std::pow(10, exp), sechalf = num - firsthalf * std::pow(10, exp);
                 newvals[firsthalf] += vals[num];
                 newvals[sechalf] += vals[num];
             } else {
